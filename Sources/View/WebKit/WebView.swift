@@ -32,16 +32,26 @@ struct WebView: AdwaitaWidget {
     ///     - type: The view render data type.
     /// - Returns: The view storage.
     func container<Data>(data: WidgetData, type: Data.Type) -> ViewStorage where Data: ViewRenderData {
-        let webView = webkit_wrapper_web_view_new()
-        let settings = webkit_wrapper_web_view_get_settings(webView)
+        let webViewPtr = webkit_wrapper_web_view_new()
+        let settings = webkit_wrapper_web_view_get_settings(webViewPtr)
 
         // Enable JavaScript for KaTeX rendering
         webkit_wrapper_settings_set_enable_javascript(settings, 1)
 
         // Disable context menu for cleaner UI
         webkit_wrapper_settings_set_enable_developer_extras(settings, 0)
+        
+        // Make WebView transparent and non-interactive
+        webkit_wrapper_set_transparent(webViewPtr)
+        webkit_wrapper_set_insensitive(webViewPtr)
 
-        let storage = ViewStorage(webView)
+        // Convert UnsafeMutableRawPointer to OpaquePointer for ViewStorage
+        let opaquePtr = OpaquePointer(webViewPtr)
+        let storage = ViewStorage(opaquePtr)
+        
+        // Store the raw pointer for our use
+        storage.fields["webViewPtr"] = webViewPtr
+        
         for function in appearFunctions {
             function(storage, data)
         }
@@ -61,11 +71,10 @@ struct WebView: AdwaitaWidget {
         updateProperties: Bool,
         type: Data.Type
     ) where Data: ViewRenderData {
-        storage.modify { widget in
-            if updateProperties, (storage.previousState as? Self)?.html != html {
-                let fullHTML = generateFullHTML()
-                // Use about:blank as base URI for security
-                webkit_wrapper_web_view_load_html(UnsafeMutableRawPointer(widget), fullHTML, "about:blank")
+        if updateProperties, (storage.previousState as? Self)?.html != html {
+            let fullHTML = generateFullHTML()
+            if let webViewPtr = storage.fields["webViewPtr"] as? UnsafeMutableRawPointer {
+                webkit_wrapper_web_view_load_html(webViewPtr, fullHTML, nil)
             }
         }
         for function in updateFunctions {
@@ -95,19 +104,26 @@ struct WebView: AdwaitaWidget {
                     margin: 0;
                     padding: 8px;
                     background: transparent;
-                    color: inherit;
+                    color: white;
                     font-size: 16px;
                     line-height: 1.5;
+                    text-align: center;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100%;
+                    pointer-events: none;
                     \(selectable ? "" : "user-select: none;")
                 }
                 .katex {
-                    font-size: 1.1em;
+                    font-size: 1.2em;
+                    color: white;
                 }
-                .math-fallback {
-                    font-family: monospace;
-                    background-color: #f0f0f0;
-                    padding: 2px 4px;
-                    border-radius: 3px;
+                .katex * {
+                    color: white !important;
+                }
+                #content {
+                    color: white;
                 }
                 \(css)
             </style>
