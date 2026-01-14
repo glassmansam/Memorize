@@ -38,25 +38,25 @@ struct MathText: SimpleView {
 
 extension String {
     /// Check if the string contains LaTeX math delimiters.
+    /// This is a heuristic check - exact validation happens at render time by KaTeX.
     var containsLaTeX: Bool {
-        // Check for display math: $$...$$
+        // Check for display math: $$...$$ (non-greedy match)
         if self.range(of: #"\$\$.+?\$\$"#, options: .regularExpression) != nil {
             return true
         }
 
-        // Check for inline math: $...$
-        // Simple check - if there are at least two $ with content between them
-        if self.range(of: #"\$[^$]+\$"#, options: .regularExpression) != nil {
+        // Check for inline math: $...$ (non-greedy, no nested $)
+        if self.range(of: #"\$[^$]+?\$"#, options: .regularExpression) != nil {
             return true
         }
 
-        // Check for LaTeX delimiters: \(...\)
-        if self.contains("\\(") && self.contains("\\)") {
+        // Check for LaTeX delimiters: \(...\) (matching pairs)
+        if self.range(of: #"\\\(.+?\\\)"#, options: .regularExpression) != nil {
             return true
         }
 
-        // Check for LaTeX delimiters: \[...\]
-        if self.contains("\\[") && self.contains("\\]") {
+        // Check for LaTeX delimiters: \[...\] (matching pairs)
+        if self.range(of: #"\\\[.+?\\\]"#, options: .regularExpression) != nil {
             return true
         }
 

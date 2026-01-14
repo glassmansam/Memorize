@@ -64,7 +64,8 @@ struct WebView: AdwaitaWidget {
         storage.modify { widget in
             if updateProperties, (storage.previousState as? Self)?.html != html {
                 let fullHTML = generateFullHTML()
-                webkit_web_view_load_html(widget, fullHTML, nil)
+                // Use about:blank as base URI for security
+                webkit_web_view_load_html(widget, fullHTML, "about:blank")
             }
         }
         for function in updateFunctions {
@@ -82,9 +83,12 @@ struct WebView: AdwaitaWidget {
         <html>
         <head>
             <meta charset="UTF-8">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+            <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" \
+        crossorigin="anonymous">
+            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" \
+        crossorigin="anonymous"></script>
             <style>
                 body {
                     font-family: 'Cantarell', sans-serif;
@@ -99,6 +103,12 @@ struct WebView: AdwaitaWidget {
                 .katex {
                     font-size: 1.1em;
                 }
+                .math-fallback {
+                    font-family: monospace;
+                    background-color: #f0f0f0;
+                    padding: 2px 4px;
+                    border-radius: 3px;
+                }
                 \(css)
             </style>
         </head>
@@ -106,15 +116,17 @@ struct WebView: AdwaitaWidget {
             <div id="content">\(html.escapedForHTML)</div>
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
-                    renderMathInElement(document.getElementById("content"), {
-                        delimiters: [
-                            {left: "$$", right: "$$", display: true},
-                            {left: "$", right: "$", display: false},
-                            {left: "\\\\(", right: "\\\\)", display: false},
-                            {left: "\\\\[", right: "\\\\]", display: true}
-                        ],
-                        throwOnError: false
-                    });
+                    if (typeof renderMathInElement === 'function') {
+                        renderMathInElement(document.getElementById("content"), {
+                            delimiters: [
+                                {left: "$$", right: "$$", display: true},
+                                {left: "$", right: "$", display: false},
+                                {left: "\\\\(", right: "\\\\)", display: false},
+                                {left: "\\\\[", right: "\\\\]", display: true}
+                            ],
+                            throwOnError: false
+                        });
+                    }
                 });
             </script>
         </body>
