@@ -7,6 +7,7 @@ _Memorize_ is a native GNOME app that stores your flashcard sets.
 It enables you to create, edit, view, and study sets.
 Use the test mode to create preparation exams.
 Additionally, you can easily import existing Quizlet sets.
+**Math LaTeX support** allows you to include beautiful math expressions in your flashcards using KaTeX.
 
 ![Screenshot](data/tutorials/Overview.png)
 
@@ -69,6 +70,20 @@ Type in your answers and scroll down to correct and see your score. Correct your
 
 In the toolbar of the view for editing a set, find the button with a sharing icon in order to export the set.
 
+### Math LaTeX Support
+
+Memorize supports LaTeX math expressions in flashcards using [KaTeX](https://katex.org/). You can include mathematical formulas in both the front and back of your flashcards.
+
+**Supported delimiters:**
+- Inline math: `$...$` or `\(...\)`
+- Display math (centered, larger): `$$...$$` or `\[...\]`
+
+**Examples:**
+- Inline: `The quadratic formula is $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$`
+- Display: `$$\int_0^1 x^2 dx = \frac{1}{3}$$`
+
+The app automatically detects LaTeX expressions and renders them beautifully in the flashcard view.
+
 ## Localization
 
 Translations are welcome! You can either edit the [Localized.yml file](Sources/Model/Localized.yml) directly as YAML,
@@ -82,6 +97,8 @@ Either way, commit the changes via git and open a pull request.
 - [FuzzyFind](https://github.com/truizlop/FuzzyFind) licensed under the [Apache License, Version 2.0](https://github.com/truizlop/FuzzyFind/blob/main/LICENSE.md)
 - [Adwaita](https://github.com/AparokshaUI/Adwaita) licensed under the [MIT License](https://github.com/AparokshaUI/Adwaita/blob/main/LICENSE.md)
 - [Localized](https://github.com/AparokshaUI/Localized) licensed under the [MIT License](https://github.com/AparokshaUI/Localized/blob/master/LICENSE.md)
+- [KaTeX](https://katex.org/) for math rendering, licensed under the [MIT License](https://github.com/KaTeX/KaTeX/blob/main/LICENSE)
+- [WebKitGTK](https://webkitgtk.org/) for web content rendering
 
 ### Other Thanks
 - The [contributors](Contributors.md)

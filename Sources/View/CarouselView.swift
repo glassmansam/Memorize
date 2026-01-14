@@ -34,10 +34,10 @@ struct CarouselView: View {
     func carouselContent(flashcard: Flashcard) -> AnyView {
         VStack {
             if answerCards.contains(flashcard.id) {
-                Text(flashcard.back)
+                MathText(text: flashcard.back, isTitle: true)
                     .transition(.slideUp)
             } else {
-                Text(flashcard.front)
+                MathText(text: flashcard.front, isTitle: true)
                     .transition(.slideDown)
             }
         }
