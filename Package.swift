@@ -14,10 +14,17 @@ let package = Package(
         .package(url: "https://github.com/truizlop/FuzzyFind", from: "0.1.0")
     ],
     targets: [
-        .systemLibrary(
+        .target(
             name: "CWebKit",
             path: "Sources/CWebKit",
-            pkgConfig: "webkit2gtk-4.1"
+            sources: ["webkit_wrapper.c"],
+            publicHeadersPath: ".",
+            cSettings: [
+                .unsafeFlags(["-I/usr/include/webkitgtk-6.0", "-I/usr/include/gtk-4.0", "-I/usr/include/glib-2.0", "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include"])
+            ],
+            linkerSettings: [
+                .linkedLibrary("webkitgtk-6.0")
+            ]
         ),
         .executableTarget(
             name: "Flashcards",

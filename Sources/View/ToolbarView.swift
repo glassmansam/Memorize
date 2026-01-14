@@ -23,7 +23,7 @@ struct ToolbarView: View {
             Button(icon: .default(icon: .listAdd)) {
                 addSet()
             }
-            .keyboardShortcut("n".ctrl(), window: window)
+            .keyboardShortcut("n".ctrl())
             .tooltip(Loc.addSet)
         } end: {
             menu

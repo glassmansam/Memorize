@@ -31,17 +31,17 @@ struct WebView: AdwaitaWidget {
     ///     - data: Modify views before being updated.
     ///     - type: The view render data type.
     /// - Returns: The view storage.
-    public func container<Data>(data: WidgetData, type: Data.Type) -> ViewStorage where Data: ViewRenderData {
-        let webView = webkit_web_view_new()
-        let settings = webkit_web_view_get_settings(webView)
+    func container<Data>(data: WidgetData, type: Data.Type) -> ViewStorage where Data: ViewRenderData {
+        let webView = webkit_wrapper_web_view_new()
+        let settings = webkit_wrapper_web_view_get_settings(webView)
 
         // Enable JavaScript for KaTeX rendering
-        webkit_settings_set_enable_javascript(settings, 1)
+        webkit_wrapper_settings_set_enable_javascript(settings, 1)
 
         // Disable context menu for cleaner UI
-        webkit_settings_set_enable_developer_extras(settings, 0)
+        webkit_wrapper_settings_set_enable_developer_extras(settings, 0)
 
-        let storage = ViewStorage(webView?.opaque())
+        let storage = ViewStorage(webView)
         for function in appearFunctions {
             function(storage, data)
         }
@@ -55,7 +55,7 @@ struct WebView: AdwaitaWidget {
     ///     - data: Modify views before being updated
     ///     - updateProperties: Whether to update the view's properties.
     ///     - type: The view render data type.
-    public func update<Data>(
+    func update<Data>(
         _ storage: ViewStorage,
         data: WidgetData,
         updateProperties: Bool,
@@ -65,7 +65,7 @@ struct WebView: AdwaitaWidget {
             if updateProperties, (storage.previousState as? Self)?.html != html {
                 let fullHTML = generateFullHTML()
                 // Use about:blank as base URI for security
-                webkit_web_view_load_html(widget, fullHTML, "about:blank")
+                webkit_wrapper_web_view_load_html(UnsafeMutableRawPointer(widget), fullHTML, "about:blank")
             }
         }
         for function in updateFunctions {
@@ -83,9 +83,9 @@ struct WebView: AdwaitaWidget {
         <html>
         <head>
             <meta charset="UTF-8">
-            <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" \
-        crossorigin="anonymous">
+            <link rel="stylesheet" \
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" \
+            crossorigin="anonymous">
             <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
             <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" \
         crossorigin="anonymous"></script>
@@ -136,6 +136,7 @@ struct WebView: AdwaitaWidget {
 }
 
 extension String {
+
     /// Escape special HTML characters.
     var escapedForHTML: String {
         var result = self

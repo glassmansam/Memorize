@@ -68,10 +68,9 @@ struct ImportView: View {
                         .iconName("go-next-symbolic")
                 }
                 .activatableWidget {
-                    Button()
-                        .activate {
-                            navigationStack.push(.tutorial(app: app))
-                        }
+                    Button("") {
+                        navigationStack.push(.tutorial(app: app))
+                    }
                 }
         }
         .boxedList()

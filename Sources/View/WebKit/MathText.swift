@@ -37,6 +37,7 @@ struct MathText: SimpleView {
 }
 
 extension String {
+
     /// Check if the string contains LaTeX math delimiters.
     /// This is a heuristic check - exact validation happens at render time by KaTeX.
     var containsLaTeX: Bool {

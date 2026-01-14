@@ -18,10 +18,9 @@ struct TagFilterForm: View {
             ActionRow()
                 .title(Loc.flashcardsWithTags)
                 .activatableWidget {
-                    Button()
-                        .activate {
-                            editTags = true
-                        }
+                    Button("") {
+                        editTags = true
+                    }
                 }
                 .suffix {
                     TagsButton(
